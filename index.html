@@ -4,30 +4,34 @@
 	<canvas id="gameCanvas" width="800" height="600"></canvas>
 
 	<script>
-		var canvas;
-		var canvasContext;
+		let canvas;
+		let canvasContext;
 
-		var ballX = 50;
-		var ballSpeedX = 10;
-		var ballY = 50;
-		var ballSpeedY = 10;
+		let audioFormat;
+		let musicBackground;
+		let soundBallHit;
 
-		var paddle1Y = 250
-		var paddle2Y = 250
+		let ballX = 50;
+		let ballSpeedX = 10;
+		let ballY = 50;
+		let ballSpeedY = 10;
+
+		let paddle1Y = 250
+		let paddle2Y = 250
 		const PADDLE_THICKNESS = 10
 		const PADDLE_HEIGHT = 100
 
-		var player1Score = 0;
-		var player2Score = 0;
+		let player1Score = 0;
+		let player2Score = 0;
 		const WINNING_SCORE = 3;
 
-		var showingWinScreen = false;
+		let showingWinScreen = false;
 
 		window.onload = function() {
 			canvas = document.getElementById('gameCanvas');
 			canvasContext = canvas.getContext('2d');
 
-			var framesPerSecond = 30;
+			let framesPerSecond = 30;
 			setInterval(function() {
 				animate();
 				draw();
@@ -35,23 +39,22 @@
 
 			canvas.addEventListener('mousemove', 
 				function(e) {
-					var mousePos = calculateMousePos(e);
+					let mousePos = calculateMousePos(e);
 					paddle1Y = mousePos.y - PADDLE_HEIGHT/2;
 				}
 			);
 
 			canvas.addEventListener('mousedown', handleMouseClick);
 
-			// sounds test
-			let music = new Audio('/assets/sounds/hit.wav');
-			music.play();
+			loadSounds();
+			musicBackground.play();
 		}
 
 		function calculateMousePos(e) {
-			var rect = canvas.getBoundingClientRect();
-			var root = document.documentElement;
-			var mouseX = e.clientX - rect.left - root.scrollLeft
-			var mouseY = e.clientY - rect.top - root.scrollTop
+			let rect = canvas.getBoundingClientRect();
+			let root = document.documentElement;
+			let mouseX = e.clientX - rect.left - root.scrollLeft
+			let mouseY = e.clientY - rect.top - root.scrollTop
 
 			return {
 				x:mouseX,
@@ -67,6 +70,21 @@
 			}
 		}
 
+		function loadSounds() {
+			setAudioFormat();
+			soundBallHit = new Audio('/assets/sounds/hit' + audioFormat);
+			musicBackground = new Audio('/assets/sounds/music' + audioFormat);
+		}
+
+		function setAudioFormat() {
+			let audio = new Audio();
+			if (audio.canPlayType("audio/mp3")) {
+				audioFormat = ".mp3";
+			} else {
+				audioFormat = ".ogg";
+			}
+		}
+
 		function ballReset() {
 		if (player1Score >= WINNING_SCORE ||
 				player2Score >= WINNING_SCORE) {
@@ -79,7 +97,7 @@
 		}
 
 		function computerMovement() {
-			var paddle2YCenter = paddle2Y + (PADDLE_HEIGHT/2)
+			let paddle2YCenter = paddle2Y + (PADDLE_HEIGHT/2)
 			if (paddle2YCenter < ballY - 35) {
 				paddle2Y += 6
 			} else if (paddle2YCenter > ballY + 35) {
@@ -101,8 +119,10 @@
 				if (ballY > paddle1Y && ballY < paddle1Y+PADDLE_HEIGHT) {
 					ballSpeedX = -ballSpeedX
 					
-					var deltaY = ballY - (paddle1Y + PADDLE_HEIGHT/2);
+					let deltaY = ballY - (paddle1Y + PADDLE_HEIGHT/2);
 					ballSpeedY = deltaY * 0.35;
+
+					soundBallHit.play();
 				} else {
 					player2Score++;
 					ballReset()
@@ -112,8 +132,10 @@
 				if (ballY > paddle2Y && ballY < paddle2Y+PADDLE_HEIGHT) {
 					ballSpeedX = -ballSpeedX
 
-					var deltaY = ballY - (paddle2Y + PADDLE_HEIGHT/2);
+					let deltaY = ballY - (paddle2Y + PADDLE_HEIGHT/2);
 					ballSpeedY = deltaY * 0.35;
+
+					soundBallHit.play();
 				} else {
 					player1Score++;
 					ballReset()
@@ -169,7 +191,7 @@
 		}
 
 		function drawNet() {
-			for(var i=0; i<canvas.height; i+=40) {
+			for(let i=0; i<canvas.height; i+=40) {
 				drawRectangle(canvas.width/2-1,i,2,20,'white');
 			}
 		}
