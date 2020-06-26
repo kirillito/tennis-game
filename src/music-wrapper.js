@@ -1,3 +1,12 @@
+function setAudioFormat() {
+  let audio = new Audio();
+  if (audio.canPlayType("audio/mp3")) {
+    audioFormat = ".mp3";
+  } else {
+    audioFormat = ".ogg";
+  }
+}
+
 class MusicWrapper {
   constructor() {
     this.musicSound = null;
