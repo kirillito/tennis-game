@@ -5,11 +5,17 @@ let audioFormat = ".mp3";
 
 let musicBackground = new MusicWrapper();
 let soundBallHit = new SoundWrapper('/assets/sounds/hit');
+let soundBallMiss = new SoundWrapper('/assets/sounds/miss');
+
+const BALL_SPEED_START = 10;
+const BALL_SPEED_UP_RATE = 0.1;
 
 let ballX = 50;
-let ballSpeedX = 10;
+let ballSpeedX = BALL_SPEED_START;
 let ballY = 50;
 let ballSpeedY = 10;
+let ballSpeedYMin = 5;
+let ballSpeedYMax = 9;
 
 let paddle1Y = 250
 let paddle2Y = 250
@@ -51,6 +57,8 @@ window.onload = function() {
   canvas.addEventListener('mousedown', handleMouseClick);
 
   musicBackground.loopMusic('/assets/sounds/music');
+
+  ballReset();
 }
 
 function calculateMousePos(e) {
@@ -74,12 +82,13 @@ function handleMouseClick(e) {
 }
 
 function ballReset() {
-if (player1Score >= WINNING_SCORE ||
+  if (player1Score >= WINNING_SCORE ||
     player2Score >= WINNING_SCORE) {
       showingWinScreen = true;
-    }
-
-  ballSpeedX = -ballSpeedX;
+  }
+    
+  ballSpeedX = (ballSpeedX > 0 ? -1 : 1) * BALL_SPEED_START;
+  ballSpeedY = (Math.random()<0.5 ? -1 : 1)*(Math.random()*(ballSpeedYMax - ballSpeedYMin) + ballSpeedYMin);
   ballX = canvas.width/2
   ballY = canvas.height/2
 }
@@ -105,7 +114,7 @@ function animate() {
 
   if (ballX <= 0) {
     if (ballY > paddle1Y && ballY < paddle1Y+PADDLE_HEIGHT) {
-      ballSpeedX = -ballSpeedX
+      ballSpeedX = -(ballSpeedX + BALL_SPEED_UP_RATE);
       
       let deltaY = ballY - (paddle1Y + PADDLE_HEIGHT/2);
       ballSpeedY = deltaY * 0.35;
@@ -113,12 +122,13 @@ function animate() {
       soundBallHit.play();
     } else {
       player2Score++;
-      ballReset()
+      soundBallMiss.play();
+      ballReset();
     }
   }
   if (ballX >= canvas.width) {
     if (ballY > paddle2Y && ballY < paddle2Y+PADDLE_HEIGHT) {
-      ballSpeedX = -ballSpeedX
+      ballSpeedX = -(ballSpeedX + BALL_SPEED_UP_RATE);
 
       let deltaY = ballY - (paddle2Y + PADDLE_HEIGHT/2);
       ballSpeedY = deltaY * 0.35;
@@ -126,7 +136,8 @@ function animate() {
       soundBallHit.play();
     } else {
       player1Score++;
-      ballReset()
+      soundBallMiss.play();
+      ballReset();
     }
   }
   if (ballY >= canvas.height || ballY <= 0) {
