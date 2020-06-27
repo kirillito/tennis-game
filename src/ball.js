@@ -21,9 +21,9 @@ class Ball {
   }
 
   reset() {
-    if (player1Score >= WINNING_SCORE ||
-      player2Score >= WINNING_SCORE) {
-        showingWinScreen = true;
+    if (paddle1.score >= WINNING_SCORE ||
+      paddle2.score >= WINNING_SCORE) {
+        showingMenuScreen = true;
     }
       
     this.speedX = (this.speedX > 0 ? -1 : 1) * BALL_SPEED_START;
@@ -45,7 +45,7 @@ class Ball {
   
         soundBallHit.play();
       } else if (this.x < 0) {
-        player2Score++;
+        paddle2.score++;
         soundBallMiss.play();
         this.reset();
       }
@@ -59,7 +59,7 @@ class Ball {
   
         soundBallHit.play();
       } else if (this.x > canvas.width)  {
-        player1Score++;
+        paddle1.score++;
         soundBallMiss.play();
         this.reset();
       }

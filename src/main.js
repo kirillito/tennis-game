@@ -17,11 +17,9 @@ let ball = new Ball();
 let paddle1 = new Paddle();
 let paddle2 = new Paddle();
 
-let player1Score = 0;
-let player2Score = 0;
 const WINNING_SCORE = 3;
 
-let showingWinScreen = false;
+let showingMenuScreen = false;
 
 window.onload = function() {
   canvas = document.getElementById('gameCanvas');
@@ -48,9 +46,17 @@ function startGame() {
     draw();
   }, 1000/FPS);
 
+  showingMenuScreen = true;
+
   paddle1.init(PADDLE_HORIZONTAL_SHIFT + PADDLE_THICKNESS, paddlePic);  
   paddle2.init(canvas.width - PADDLE_THICKNESS - PADDLE_HORIZONTAL_SHIFT, paddlePic);  
   ball.init(ballPic);
+}
+
+function restartGame() {
+  paddle1.reset();
+  paddle2.reset();
+  showingMenuScreen = false;
 }
 
 function computerMovement() {
@@ -63,12 +69,17 @@ function computerMovement() {
 }
 
 function update() {
-  if(showingWinScreen) {
+  if(showingMenuScreen) {
+
     return;
   }
 
-  computerMovement()
+  if (!isTwoPlayerMode) {
+    computerMovement();
+  }
 
+  paddle1.move();
+  paddle2.move();
   ball.move();
 }
 
@@ -76,16 +87,18 @@ function draw() {
   // background
   drawImageCenteredAtLocationWithScaling(bgPic, canvas.width/2, canvas.height/2, canvas.width, canvas.height);
 
-  if(showingWinScreen) {
+  if(showingMenuScreen) {
+    canvasContext.font = "30px Arial bold";
     canvasContext.fillStyle = 'white';
 
-    if (player1Score >= WINNING_SCORE) {
-      canvasContext.fillText("Left player won!", 250, 200);
-    } else if (player2Score >= WINNING_SCORE) {
-      canvasContext.fillText("Right player won!", 250, 200);
+    if (paddle1.score >= WINNING_SCORE) {
+      canvasContext.fillText("Left player won!", 270, 200);
+    } else if (paddle2.score >= WINNING_SCORE) {
+      canvasContext.fillText("Right player won!", 270, 200);
     }
 
-    canvasContext.fillText("click to continue", 250, 500);
+    canvasContext.fillText("Press 1 to play against computer with a mouse", 120, 290);
+    canvasContext.fillText("Press 2 for 2-player mode with a keyboard", 120, 330);
     return;
   }
 
@@ -99,6 +112,6 @@ function draw() {
   canvasContext.fillStyle = 'white';
   
   canvasContext.font = "40px Arial bold";
-  canvasContext.fillText(player1Score, 100, 120)
-  canvasContext.fillText(player2Score, canvas.width - 100, 120)
+  canvasContext.fillText(paddle1.score, 100, 120)
+  canvasContext.fillText(paddle2.score, canvas.width - 100, 120)
 }

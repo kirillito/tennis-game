@@ -4,3 +4,11 @@ body {
   font-size: 2em;
   text-align: center;
 }
+
+.controls {
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  margin-left: 20px;
+  text-align: left;
+}

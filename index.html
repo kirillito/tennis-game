@@ -5,7 +5,23 @@
 	<link type="text/css" rel="stylesheet" href="assets/main.css">
 </head>
 <body>
-	<canvas id="gameCanvas" width="800" height="600"></canvas>
+	<div style="display: flex">
+		<canvas id="gameCanvas" width="800" height="600"></canvas>
+		<div class="controls">
+			<h3>Controls:</h3>
+			<span id="player1NameControls">Player 1</span>: 
+			<ul>
+				<li>Up Arrow - Move up</li>
+				<li>Down Arrow - Move down</li>
+			</ul>
+			<br />
+			<span id="player2NameControls">Player 2</span>: 
+			<ul>
+				<li>W - Move up</li>
+				<li>S - Move down</li>
+			</ul>
+		</div>
+	</div>
 
 	<script src="src/assets-loading.js"></script>
 	<script src="src/graphics-common.js"></script>
