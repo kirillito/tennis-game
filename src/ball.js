@@ -1,7 +1,9 @@
 const BALL_SPEED_START = 8;
 const BALL_SPEED_UP_RATE = 0.1;
 
-const BALL_SIZE = 10;
+const BALL_SIZE = 14;
+
+const BALL_TRAIL_SIZE = 5;
 
 class Ball {
   constructor() {
@@ -11,6 +13,8 @@ class Ball {
     this.speedY = 10;
     this.speedYMin = 5;
     this.speedYMax = 9;
+
+    this.trail = new Array(BALL_TRAIL_SIZE);
 
     this.imgSprite = null;
   }
@@ -30,6 +34,8 @@ class Ball {
     this.speedY = (Math.random()<0.5 ? -1 : 1)*(Math.random()*(this.speedYMax - this.speedYMin) + this.speedYMin);
     this.x = canvas.width/2
     this.y = canvas.height/2
+
+    this.trail = this.trail.fill({x: this.x, y: this.y});
   }
 
   move() {
@@ -67,10 +73,20 @@ class Ball {
     if (this.y >= canvas.height || this.y <= 0) {
       soundBallWallHit.play();
       this.speedY = -this.speedY
-    }  
+    }
+
+    this.trail.shift();
+    this.trail.push({x: this.x, y: this.y});
   }
 
   draw() {
+    // trail
+    for (let i=this.trail.length-1; i>=0; i--) {
+      canvasContext.globalAlpha = 0.1*i;
+      drawImageCenteredAtLocationWithScaling(this.imgSprite, this.trail[i].x, this.trail[i].y, BALL_SIZE, BALL_SIZE);
+    }
+
+    canvasContext.globalAlpha = 1;
     drawImageCenteredAtLocationWithScaling(this.imgSprite, this.x, this.y, BALL_SIZE, BALL_SIZE);
   }
 }

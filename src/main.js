@@ -92,9 +92,9 @@ function draw() {
     canvasContext.fillStyle = 'white';
 
     if (paddle1.score >= WINNING_SCORE) {
-      canvasContext.fillText("Left player won!", 270, 200);
+      canvasContext.fillText("Left player won!", 280, 200);
     } else if (paddle2.score >= WINNING_SCORE) {
-      canvasContext.fillText("Right player won!", 270, 200);
+      canvasContext.fillText("Right player won!", 280, 200);
     }
 
     canvasContext.fillText("Press 1 to play against computer with a mouse", 120, 290);
@@ -111,7 +111,7 @@ function draw() {
 
   canvasContext.fillStyle = 'white';
   
-  canvasContext.font = "40px Arial bold";
-  canvasContext.fillText(paddle1.score, 100, 120)
-  canvasContext.fillText(paddle2.score, canvas.width - 100, 120)
+  canvasContext.font = "70px Arial bold";
+  canvasContext.fillText(paddle1.score, 100, 160)
+  canvasContext.fillText(paddle2.score, canvas.width - 100, 160)
 }
