@@ -1,5 +1,5 @@
 const BALL_SPEED_START = 8;
-const BALL_SPEED_UP_RATE = 0.1;
+const BALL_SPEED_UP_RATE = 1.1;
 
 const BALL_SIZE = 14;
 
@@ -13,6 +13,8 @@ class Ball {
     this.speedY = 10;
     this.speedYMin = 5;
     this.speedYMax = 9;
+
+    this.bounceX = 0;
 
     this.trail = new Array(BALL_TRAIL_SIZE);
 
@@ -30,6 +32,7 @@ class Ball {
         showingMenuScreen = true;
     }
       
+    this.bounceX = 0;
     this.speedX = (this.speedX > 0 ? -1 : 1) * BALL_SPEED_START;
     this.speedY = (Math.random()<0.5 ? -1 : 1)*(Math.random()*(this.speedYMax - this.speedYMin) + this.speedYMin);
     this.x = canvas.width/2
@@ -40,39 +43,50 @@ class Ball {
 
   move() {
     this.x = this.x + this.speedX;
-    this.y = this.y + this.speedY;
-  
-    if (this.x <= paddle1.x) {
-      if (this.x >= (paddle1.x-PADDLE_THICKNESS) && this.y > paddle1.y && this.y < paddle1.y+PADDLE_HEIGHT) {
-        this.speedX = -(this.speedX + BALL_SPEED_UP_RATE);
+    this.y = this.y + this.speedY;  
+
+    // Collisions - paddle 1
+    if (this.x > paddle1.borderRight && (this.x + this.speedX) <= paddle1.borderRight) {
+      let interceptPointY = paddle1.getBallInterceptPoint().y;
+      if (paddle1.borderTop <= interceptPointY && paddle1.borderBottom >= interceptPointY) {
+        this.speedX = -(this.speedX * BALL_SPEED_UP_RATE);
         
         let deltaY = this.y - (paddle1.y + PADDLE_HEIGHT/2);
         this.speedY = deltaY * 0.35;
+        this.bounceX = this.x;
   
         soundBallHit.play();
-      } else if (this.x < 0) {
-        paddle2.score++;
-        soundBallMiss.play();
-        this.reset();
       }
+    } else if (this.x < 0) {
+      paddle2.score++;
+      soundBallMiss.play();
+      this.reset();
     }
-    if (this.x >= paddle2.x) {
-      if (this.x <= (paddle2.x+PADDLE_THICKNESS) && this.y > paddle2.y && this.y < paddle2.y+PADDLE_HEIGHT) {
-        this.speedX = -(this.speedX + BALL_SPEED_UP_RATE);
+
+    // Collisions - paddle 2
+    if (this.x < paddle2.borderLeft && (this.x + this.speedX) >= paddle2.borderLeft) {
+      let interceptPointY = paddle2.getBallInterceptPoint().y;
+      if (paddle2.borderTop <= interceptPointY && paddle2.borderBottom >= interceptPointY) {
+        this.speedX = -(this.speedX * BALL_SPEED_UP_RATE);
   
         let deltaY = this.y - (paddle2.y + PADDLE_HEIGHT/2);
         this.speedY = deltaY * 0.35;
-  
+        this.bounceX = this.x;
+        
         soundBallHit.play();
-      } else if (this.x > canvas.width)  {
-        paddle1.score++;
-        soundBallMiss.play();
-        this.reset();
-      }
+      } 
     }
+    else if (this.x > canvas.width)  {
+      paddle1.score++;
+      soundBallMiss.play();
+      this.reset();
+    }
+
+    // Collisions - top and bottom walls
     if (this.y >= canvas.height || this.y <= 0) {
       soundBallWallHit.play();
       this.speedY = -this.speedY
+      this.bounceX = this.x;
     }
 
     this.trail.shift();

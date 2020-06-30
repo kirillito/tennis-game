@@ -25,8 +25,6 @@ window.onload = function() {
   canvas = document.getElementById('gameCanvas');
   canvasContext = canvas.getContext('2d');
 
-  musicBackground.loopMusic('assets/sounds/music');
-
   initInput();
   loadImages();
 
@@ -57,15 +55,7 @@ function restartGame() {
   paddle1.reset();
   paddle2.reset();
   showingMenuScreen = false;
-}
-
-function computerMovement() {
-  let paddle2YCenter = paddle2.y + (PADDLE_HEIGHT/2)
-  if (paddle2YCenter < ball.y - 35) {
-    paddle2.y += 6
-  } else if (paddle2YCenter > ball.y + 35) {
-    paddle2.y -= 6
-  }
+  musicBackground.loopMusic('assets/sounds/music');
 }
 
 function update() {
@@ -74,12 +64,14 @@ function update() {
     return;
   }
 
+  paddle1.move();
+
   if (!isTwoPlayerMode) {
-    computerMovement();
+    paddle2.computerMove();
+  } else {
+    paddle2.move();
   }
 
-  paddle1.move();
-  paddle2.move();
   ball.move();
 }
 
